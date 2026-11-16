@@ -16,6 +16,8 @@ When several people talk to one agent through Telegram, Matrix, the Web UI, or w
 [Message from the agent in DSH session session-7b2e…, not typed by a person]
 ```
 
+In the Web UI, a message an agent sent (another session, a scheduled job, an outside script) is drawn on the assistant's side under a line naming its sender, instead of as the owner's own bubble. See "In the Web UI" below.
+
 The person's message itself is never changed. The context goes in a separate notice message (`form: 'notice'`) right before it, which is saved in the session log with the step, so session titles, search and anything else that reads people's words still sees only what they wrote. A message with no metadata (the owner typing in the Web UI, a scheduled prompt) gets nothing.
 
 ## Install
@@ -24,7 +26,7 @@ The person's message itself is never changed. The context goes in a separate not
 dsh plugin --profile web add @soffits/dsh-message-context
 ```
 
-The bundle adds one host row, `message-context`. It has no tools and no UI, so enabling or disabling it is safe while sessions run.
+The bundle adds one host row, `message-context`, and a Web client part. It has no tools, so enabling or disabling it is safe while sessions run.
 
 Channel plugins that render their own sender line should be updated to versions that only record metadata, otherwise the model sees both.
 
@@ -89,6 +91,14 @@ Rules for producers:
 
 - Don't add context to the person's text. If your channel already puts reply or forward context into the text, leave `replyTo` and `forwardedFrom` out, or the model reads it twice.
 - Set the fields when you build the message, or in an `agent/pre-step` listener registered without `prepend`. This plugin's listener is prepended, so it runs after yours and sees what you recorded.
+
+## In the Web UI
+
+DSH's Chat draws every user-role message whose source kind is `user` as the owner's bubble, and other kinds as a collapsed context row. A message another session sent (`open_session`, `prompt_session`), a scheduled job's prompt, a send a channel plugin mirrors into a session, or anything else whose `source.principal` has one of the agent kinds (`dsh-session`, `cron-job`, `external`) is neither. The client claims those messages on the Chat target and draws them on the assistant's side, in full, with pictures and files, under a line that says who sent them: "Session 1a2b3c4d" (the full id on hover), "This session", "Scheduled job Morning brief", or the outside caller's name. The choice is made only from `source.principal.kind`, so any producer that records its sender gets the same row, with no client code of its own.
+
+The row takes the place Chat would give a person's message: a prompt that starts a turn opens an exchange, one sent into a running turn is an input of it, and a record that started nothing stays in its turn outside the folded work. Messages from people, the owner and unmarked messages are left to Chat.
+
+Chat lets only one plugin claim a message, so a channel plugin that records principals must not draw those messages itself.
 
 ## How it works
 
