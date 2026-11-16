@@ -63,7 +63,7 @@ For authors of channel plugins. Everything lives on the user message's `source` 
 }
 ```
 
-Kinds the renderer knows by name: `telegram-user` (`user id`), `oidc-user` (`oidc sub`), `matrix-user` (the Matrix id as is), `deltachat-user` (`key`). Any other kind is shown as `id <id>`. Senders that are not people use the shared kinds `dsh-session` (another session, `id` is its session id), `cron-job` (a scheduled job) and `external` (an outside script), and are never presented as a person. A principal of kind `owner` is the owner and gets no line.
+Kinds the renderer knows by name: `telegram-user` (`user id`), `oidc-user` (`oidc sub`), `matrix-user` (the Matrix id as is), `deltachat-user` (`key`). Any other kind is shown as `id <id>`. Senders that are not people use the shared kinds `dsh-session` (another session, `id` is its session id), `cron-job` (a scheduled job) and `external` (an outside script), and are never presented as a person. When a channel mirrors into a session something such a sender posted to the channel (a job's notice sent into a Telegram topic), the principal's `chat` says where it went, with the channel it belongs to: `chat: { channel: 'telegram', id: '100', thread: 7100, name: 'Notify' }` renders as `[Message from scheduled job "Check-in", posted to Telegram "Notify"]`. Messages are described whatever their source kind, so a channel may record such posts under its own kind. A principal of kind `owner` is the owner and gets no line.
 
 **`source.envelope`** holds facts about this one message. All fields are optional:
 

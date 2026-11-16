@@ -192,6 +192,22 @@ function timeText(epochMs, timeZone) {
 }
 
 /**
+ * Where an agent posted a message that a channel mirrors into a session:
+ * `, posted to Telegram "Notify"`.
+ * @param chat - the principal's `chat` (`{ channel, id, thread, name }`), or undefined.
+ * @returns the clause, or an empty string.
+ */
+function postedTo(chat) {
+  if (chat === null || typeof chat !== 'object') return ''
+  const place = quoted(chat.name)
+    ?? (cleanLabel(String(chat.thread ?? ''), 32) === undefined ? undefined : `thread ${cleanLabel(String(chat.thread), 32)}`)
+    ?? (cleanLabel(String(chat.id ?? ''), 64) === undefined ? undefined : `chat ${cleanLabel(String(chat.id), 64)}`)
+  if (place === undefined) return ''
+  const channel = channelName(chat.channel)
+  return `, posted to ${channel === undefined ? '' : `${channel} `}${place}`
+}
+
+/**
  * The first line: who sent the message, where and when.
  * @param principal - `source.principal`, or undefined.
  * @param sentAt - `envelope.sentAt`, or undefined.
@@ -206,13 +222,14 @@ export function senderLine(principal, sentAt, options) {
   if (!known) return time === undefined ? undefined : `[Message sent ${time}]`
   const name = cleanLabel(principal.name)
   const id = cleanLabel(principal.id, 128)
+  const posted = include.chat ? postedTo(principal.chat) : ''
   if (principal.kind === 'dsh-session') {
-    return `[Message from the agent in DSH session ${id ?? 'unknown'}${name === undefined ? '' : ` (${name})`}, not typed by a person${sent}]`
+    return `[Message from the agent in DSH session ${id ?? 'unknown'}${name === undefined ? '' : ` (${name})`}, not typed by a person${posted}${sent}]`
   }
   if (principal.kind === 'cron-job') {
-    return `[Message from scheduled job ${quoted(principal.name) ?? id ?? 'unknown'}${include.ids && name !== undefined && id !== undefined ? ` (${id})` : ''}${sent}]`
+    return `[Message from scheduled job ${quoted(principal.name) ?? id ?? 'unknown'}${include.ids && name !== undefined && id !== undefined ? ` (${id})` : ''}${posted}${sent}]`
   }
-  if (principal.kind === 'external') return `[Message from ${name ?? id ?? 'an outside caller'}, an outside caller${sent}]`
+  if (principal.kind === 'external') return `[Message from ${name ?? id ?? 'an outside caller'}, an outside caller${posted}${sent}]`
   const channel = channelName(principal.channel)
   const head = channel === undefined ? 'Message' : `${channel} message`
   const ids = include.ids ? personIds(principal) : []
@@ -272,7 +289,9 @@ export function forwardLine(forwardedFrom, options) {
  * @returns `{ text, summary }`, or undefined when the source carries nothing to show.
  */
 export function renderContext(source, options) {
-  if (source === null || typeof source !== 'object' || source.kind !== 'user') return undefined
+  // Any user-role message may carry metadata: one a person typed (`user`) or one a channel mirrored
+  // into the session (a channel's own kind). Only this plugin's notices are never described.
+  if (source === null || typeof source !== 'object' || source.kind === NOTICE_KIND) return undefined
   const principal = source.principal !== null && typeof source.principal === 'object' ? source.principal : undefined
   const envelope = source.envelope !== null && typeof source.envelope === 'object' ? source.envelope : {}
   if (options.channels.length > 0 && !options.channels.includes(principal?.channel)) return undefined

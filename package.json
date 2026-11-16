@@ -1,6 +1,6 @@
 {
   "name": "@soffits/dsh-message-context",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Tell the model who sent each message, where, when and what it replies to, and show messages agents sent as theirs in the Web UI. One format for Telegram, Matrix, the Web UI and agent-to-agent messages.",
   "type": "module",
   "main": "./index.js",
