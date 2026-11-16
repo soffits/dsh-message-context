@@ -1,17 +1,19 @@
 {
   "name": "@soffits/dsh-message-context",
-  "version": "0.1.0",
-  "description": "Tell the model who sent each message, where, when and what it replies to, from the metadata channel plugins record. One format for Telegram, Matrix, the Web UI and agent-to-agent messages.",
+  "version": "0.2.0",
+  "description": "Tell the model who sent each message, where, when and what it replies to, and show messages agents sent as theirs in the Web UI. One format for Telegram, Matrix, the Web UI and agent-to-agent messages.",
   "type": "module",
   "main": "./index.js",
   "exports": {
     ".": "./index.js",
+    "./client": "./client.js",
     "./locale/*.json": "./locale/*.json",
     "./icon": "./icon.svg",
     "./package.json": "./package.json"
   },
   "files": [
     "index.js",
+    "client.js",
     "src/*.js",
     "cordis.patch.yml",
     "locale/*.json",
@@ -22,6 +24,15 @@
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-chat",
+        "@deepseek-ai/dsh-client-ui-conversation"
+      ]
     }
   },
   "engines": {
@@ -30,7 +41,7 @@
   },
   "scripts": {
     "test": "node --test \"test/*.test.js\"",
-    "check": "for f in index.js src/*.js test/*.js; do node --check \"$f\" || exit 1; done"
+    "check": "for f in index.js client.js src/*.js test/*.js; do node --check \"$f\" || exit 1; done"
   },
   "peerDependencies": {
     "@deepseek-ai/schemastery": "^3.18.5"
