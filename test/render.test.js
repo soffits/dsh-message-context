@@ -39,11 +39,12 @@ test('agents, jobs and outside callers are never presented as people', () => {
   assert.equal(outside.text, '[Message from backup script, an outside caller]')
 })
 
-test('nothing is rendered without metadata, for the owner, or for other sources', () => {
+test('nothing is rendered without metadata, for the owner, or for notices', () => {
   assert.equal(renderContext({ kind: 'user' }, options), undefined)
   assert.equal(renderContext({ kind: 'user', rpcId: 'x', clientTimeZone: 'UTC' }, options), undefined)
   assert.equal(renderContext({ kind: 'user', principal: { kind: 'owner' } }, options), undefined)
-  assert.equal(renderContext({ kind: 'agent-message', principal: telegram }, options), undefined)
+  assert.equal(renderContext({ kind: 'agent-message', form: 'relay', senderSessionId: 's' }, options), undefined, 'DSH relays name their sender themselves')
+  assert.equal(renderContext({ kind: 'message-context', principal: telegram }, options), undefined, 'a notice is never described')
   assert.equal(renderContext(undefined, options), undefined)
 })
 
@@ -134,4 +135,12 @@ test('describeParty and formatMoment edge cases', () => {
   assert.equal(describeParty({ username: '@bo' }), '@bo')
   assert.equal(formatMoment(Number.NaN, 'UTC'), undefined)
   assert.equal(formatMoment(0, 'UTC'), 'Thu 1970-01-01 00:00 UTC+00:00')
+})
+
+test('a message an agent posted to a channel says where it went', () => {
+  const job = { kind: 'cron-job', channel: 'cron', id: 'job-9', name: 'Check-in', chat: { channel: 'telegram', id: '100', thread: 7100, name: 'Notify' } }
+  assert.equal(renderContext({ kind: 'telegram-post', principal: job }, options).text, '[Message from scheduled job "Check-in" (job-9), posted to Telegram "Notify"]')
+  const session = { kind: 'dsh-session', channel: 'dsh', id: 'session-1', chat: { channel: 'telegram', id: '100', thread: 7100 } }
+  assert.equal(renderContext({ kind: 'telegram-post', principal: session }, options).text, '[Message from the agent in DSH session session-1, not typed by a person, posted to Telegram thread 7100]')
+  assert.equal(renderContext({ kind: 'telegram-post', principal: job }, { ...options, include: { ...options.include, chat: false } }).text, '[Message from scheduled job "Check-in" (job-9)]')
 })

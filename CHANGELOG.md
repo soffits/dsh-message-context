@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.3.0]
+
+### Added
+
+- Messages are described whatever their source kind, so a send a channel mirrors into a session under its own kind (Telegram's `telegram-post`) gets its line too; only this plugin's notices are skipped.
+- A sender that is not a person can carry `chat` on its principal, naming where it posted the message: `[Message from scheduled job "Check-in", posted to Telegram "Notify"]`.
+
 ## [0.2.0]
 
 ### Added
