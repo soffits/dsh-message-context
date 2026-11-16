@@ -1,0 +1,1 @@
+{ "meta": { "title": "Message context", "description": "Tells the model who sent each message, in which chat, when, and what it replies to, from the metadata channel plugins record." } }
