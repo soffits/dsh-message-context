@@ -23,3 +23,4 @@ A DeepSeek Harness plugin: one `agent/pre-step` listener that renders channel me
 - Conventional Commits, one-line subjects; squash merges; PR titles are Conventional Commit subjects.
 - Versions follow semver from the commit types since the last tag (below 1.0: `feat` or breaking is minor, `fix` patch); `.github/scripts/release-bump-check.py <version>` before tagging.
 - Ordinary implementation choices go in `docs/decisions.md` with a one-line reason.
+- Releases: after bumping the version and `CHANGELOG.md` and merging, pushing the tag `vX.Y.Z` runs `.github/workflows/publish.yml`, which publishes to npm by trusted publishing (OIDC, with provenance, no stored token; the package's trusted publisher on npmjs.com names this repo and `publish.yml`, so renaming either breaks it) and creates the GitHub release. Don't publish by hand.
