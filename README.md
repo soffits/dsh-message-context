@@ -11,7 +11,7 @@ When several people talk to one agent through Telegram, Matrix, the Web UI, or w
 ```
 
 ```
-[Web message from nya (oidc sub 2f1c…), sent Mon 2026-03-02 09:45 UTC-05:00]
+[Web message from Sam (oidc sub 2f1c…), sent Mon 2026-03-02 09:45 UTC-05:00]
 [Matrix message from Ana (@ana:example.org) in "Home"]
 [Message from the agent in DSH session session-7b2e…, not typed by a person]
 ```
