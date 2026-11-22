@@ -22,8 +22,8 @@ test('a Telegram message names the sender, ids, topic and time', () => {
 })
 
 test('Web, Matrix and unknown channels use the same shape', () => {
-  const web = renderContext({ kind: 'user', principal: { kind: 'oidc-user', channel: 'web', id: 'sub-1', name: 'nya', issuer: 'https://id.example' } }, options)
-  assert.equal(web.text, '[Web message from nya (oidc sub sub-1)]')
+  const web = renderContext({ kind: 'user', principal: { kind: 'oidc-user', channel: 'web', id: 'sub-1', name: 'Sam', issuer: 'https://id.example' } }, options)
+  assert.equal(web.text, '[Web message from Sam (oidc sub sub-1)]')
   const matrix = renderContext({ kind: 'user', principal: { kind: 'matrix-user', channel: 'matrix', id: '@ana:example.org', name: 'Ana', chat: { id: '!r:example.org', name: 'Home' } } }, options)
   assert.equal(matrix.text, '[Matrix message from Ana (@ana:example.org) in "Home"]')
   const other = renderContext({ kind: 'user', principal: { kind: 'irc-user', channel: 'irc', id: 'ana', name: 'Ana' } }, options)
