@@ -1,5 +1,3 @@
-> **Moved.** This plugin is now part of [@soffits/dsh-companion-runtime](https://github.com/soffits/dsh-companion-runtime) (`message-context/`). This repository is archived.
-
 # dsh-message-context
 
 A [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) plugin that tells the model who sent each message, in which chat, when, and what it replies to.
